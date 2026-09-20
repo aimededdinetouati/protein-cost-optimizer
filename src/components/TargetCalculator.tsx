@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CalculatedFoodItem, Language } from '@/types';
 import { translations } from '@/lib/translations';
 import {
@@ -27,6 +27,8 @@ interface TargetCalculatorProps {
   animalItems: CalculatedFoodItem[];
   plantItems: CalculatedFoodItem[];
   lang: Language;
+  basket: BasketItem[];
+  onBasketChange: (updater: BasketItem[] | ((prev: BasketItem[]) => BasketItem[])) => void;
 }
 
 export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
@@ -35,6 +37,8 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
   animalItems,
   plantItems,
   lang,
+  basket,
+  onBasketChange: setBasket,
 }) => {
   const t = translations[lang];
 
@@ -54,34 +58,6 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
 
   // Selected food ID to add from dropdown
   const [selectedFoodIdToAdd, setSelectedFoodIdToAdd] = useState<string>('');
-
-  // Daily multi-source basket state (persisted to localStorage)
-  const [basket, setBasket] = useState<BasketItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('daily_protein_plan_basket');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        } catch {
-          // ignore corrupted data
-        }
-      }
-    }
-    // Default starter combo (Eggs + Chicken Breast + Candia Milk)
-    return [
-      { foodId: 'whole-eggs', quantity: 3 },
-      { foodId: 'chicken-breast', quantity: 0.25 },
-      { foodId: 'candia-milk', quantity: 0.5 },
-    ];
-  });
-
-  // Persist basket on changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('daily_protein_plan_basket', JSON.stringify(basket));
-    }
-  }, [basket]);
 
   // Active selection fallback
   const activeSelectedId = selectedFoodIdToAdd || (allFoods.length > 0 ? allFoods[0].id : '');

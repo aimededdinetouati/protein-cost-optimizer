@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { FoodItem, Category, Language } from '@/types';
-import { defaultFoods, rankAndCalculateFoods, mergeWithDefaults } from '@/lib/defaultData';
+import { FoodItem, Category, Language, BasketItem } from '@/types';
+import { defaultFoods, rankAndCalculateFoods, mergeWithDefaults, defaultBasket } from '@/lib/defaultData';
 import { translations } from '@/lib/translations';
 import { Header } from '@/components/Header';
 import { TargetCalculator } from '@/components/TargetCalculator';
@@ -17,6 +17,7 @@ export default function Home() {
   const [email, setEmail] = useState<string | null>(null);
   const [foods, setFoods] = useState<FoodItem[]>(defaultFoods);
   const [targetDailyProtein, setTargetDailyProtein] = useState<number>(140);
+  const [basket, setBasket] = useState<BasketItem[]>(defaultBasket);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   // Navigation tab state: 'tables' (default main view) | 'simulator'
@@ -28,8 +29,8 @@ export default function Home() {
   const [addModalCategory, setAddModalCategory] = useState<Category>('animal');
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
 
-  // Flags to avoid auto-saving during initial load
-  const isInitialMount = useRef(true);
+  // Critical flag: prevent auto-saving until user profile is completely loaded
+  const isDataLoaded = useRef(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const t = translations[lang];
@@ -38,7 +39,9 @@ export default function Home() {
   const loadUserProfile = useCallback(async (userEmail: string) => {
     setSaveStatus('saving');
     try {
-      const res = await fetch(`/api/user-data?email=${encodeURIComponent(userEmail)}`);
+      const res = await fetch(`/api/user-data?email=${encodeURIComponent(userEmail)}`, {
+        cache: 'no-store',
+      });
       if (res.ok) {
         const data = await res.json();
         if (data.foods && Array.isArray(data.foods)) {
@@ -47,19 +50,25 @@ export default function Home() {
         if (data.targetDailyProtein) {
           setTargetDailyProtein(data.targetDailyProtein);
         }
+        if (data.basket && Array.isArray(data.basket)) {
+          setBasket(data.basket);
+        }
         setSaveStatus('saved');
+        return data;
       } else {
         setSaveStatus('error');
+        return null;
       }
     } catch (err) {
       console.error('Failed to load user profile:', err);
       setSaveStatus('error');
+      return null;
     }
   }, []);
 
   // Initialize client state from localStorage on mount
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const initApp = async () => {
       const savedLang = localStorage.getItem('app_language') as Language;
       if (savedLang && (savedLang === 'ar' || savedLang === 'en')) {
         setLang(savedLang);
@@ -73,7 +82,8 @@ export default function Home() {
       const storedEmail = localStorage.getItem('current_user_email');
       if (storedEmail) {
         setEmail(storedEmail);
-        loadUserProfile(storedEmail);
+        await loadUserProfile(storedEmail);
+        isDataLoaded.current = true;
       } else {
         // Check for guest data
         const guestData = localStorage.getItem('guest_user_data');
@@ -83,17 +93,23 @@ export default function Home() {
             if (parsed.foods && Array.isArray(parsed.foods)) {
               setFoods(mergeWithDefaults(parsed.foods));
             }
-            if (parsed.targetDailyProtein) setTargetDailyProtein(parsed.targetDailyProtein);
+            if (parsed.targetDailyProtein) {
+              setTargetDailyProtein(parsed.targetDailyProtein);
+            }
+            if (parsed.basket && Array.isArray(parsed.basket)) {
+              setBasket(parsed.basket);
+            }
           } catch {
             // ignore corrupted guest data
           }
         }
+        isDataLoaded.current = true;
         // Open auth modal on initial visit
         setIsAuthModalOpen(true);
       }
-    }, 0);
+    };
 
-    return () => clearTimeout(timer);
+    initApp();
   }, [loadUserProfile]);
 
   const handleToggleLang = () => {
@@ -104,10 +120,9 @@ export default function Home() {
     localStorage.setItem('app_language', newLang);
   };
 
-  // Debounced auto-save (500ms)
+  // Debounced auto-save (500ms) - ONLY runs when isDataLoaded.current is true
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
+    if (!isDataLoaded.current) {
       return;
     }
 
@@ -129,6 +144,7 @@ export default function Home() {
               email,
               targetDailyProtein,
               foods,
+              basket,
             }),
           });
           if (res.ok) {
@@ -147,6 +163,7 @@ export default function Home() {
           JSON.stringify({
             targetDailyProtein,
             foods,
+            basket,
             updatedAt: new Date().toISOString(),
           })
         );
@@ -160,7 +177,7 @@ export default function Home() {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [foods, targetDailyProtein, email]);
+  }, [foods, targetDailyProtein, basket, email]);
 
   // Calculations & Sorting
   const { animal: animalCalculated, plant: plantCalculated } = useMemo(() => {
@@ -195,13 +212,17 @@ export default function Home() {
   const handleResetDefaults = () => {
     setFoods(defaultFoods);
     setTargetDailyProtein(140);
+    setBasket(defaultBasket);
   };
 
-  const handleSubmitEmail = (newEmail: string) => {
+  const handleSubmitEmail = async (newEmail: string) => {
+    setIsAuthModalOpen(false);
+    // Block auto-save while loading remote profile for the new email
+    isDataLoaded.current = false;
     setEmail(newEmail);
     localStorage.setItem('current_user_email', newEmail);
-    setIsAuthModalOpen(false);
-    loadUserProfile(newEmail);
+    await loadUserProfile(newEmail);
+    isDataLoaded.current = true;
   };
 
   const handleContinueAsGuest = () => {
@@ -334,6 +355,8 @@ export default function Home() {
               animalItems={animalCalculated}
               plantItems={plantCalculated}
               lang={lang}
+              basket={basket}
+              onBasketChange={setBasket}
             />
           </div>
         )}

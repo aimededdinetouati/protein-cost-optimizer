@@ -1,4 +1,10 @@
-import { FoodItem, CalculatedFoodItem } from '@/types';
+import { FoodItem, CalculatedFoodItem, BasketItem } from '@/types';
+
+export const defaultBasket: BasketItem[] = [
+  { foodId: 'whole-eggs', quantity: 3 },
+  { foodId: 'chicken-breast', quantity: 0.25 },
+  { foodId: 'candia-milk', quantity: 0.5 },
+];
 
 export const defaultFoods: FoodItem[] = [
   // Animal Sources

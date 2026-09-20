@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserProfile, saveUserProfile } from '@/lib/storage';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: NextRequest) {
   const email = req.nextUrl.searchParams.get('email')?.toLowerCase().trim();
   if (!email) {

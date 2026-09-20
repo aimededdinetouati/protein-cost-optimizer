@@ -18,11 +18,17 @@ export interface FoodItem {
   isCustom?: boolean;
 }
 
+export interface BasketItem {
+  foodId: string;
+  quantity: number; // in native units: kg, liter, 100g, piece
+}
+
 export interface UserProfile {
   email: string;
   updatedAt: string;
   targetDailyProtein: number; // e.g., 140g
   foods: FoodItem[];
+  basket?: BasketItem[];
 }
 
 export interface CalculatedFoodItem extends FoodItem {
