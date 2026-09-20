@@ -32,13 +32,32 @@ export const translations = {
 
     // Simulator
     simulatorTitle: 'محاكي ميزانية البروتين اليومي',
-    simulatorDesc: 'حرّك المؤشر لتحديد احتياجك اليومي من البروتين ومقارنة تكلفته الشهرية عبر مختلف المصادر',
+    simulatorDesc: 'حرّك المؤشر لتحديد احتياجك اليومي من البروتين وبناء خطتك المتكاملة بحساب التكلفة الدقيقة',
     targetDailyProtein: 'الهدف اليومي من البروتين',
     cheapestAnimal: 'أرخص مصدر حيواني',
     chickenBenchmark: 'معيار صدر الدجاج',
     cheapestPlant: 'أرخص مصدر نباتي',
     estimatedDailyCost: 'التكلفة اليومية',
     estimatedMonthlyCost: 'التكلفة الشهرية (30 يوم)',
+
+    // Basket / Combo Builder
+    comboBuilderTitle: 'تركيبة سلة البروتين اليومية (مصادر متعددة)',
+    comboBuilderDesc: 'اختر وحدد كميات الأطعمة التي تستهلكها في يومك للوصول إلى هدفك ومعرفة التكلفة الإجمالية بدقة',
+    addItemToBasket: '+ إضافة مصدر للخطة',
+    selectFoodPlaceholder: 'اختر طعاماً لإضافته للخطة...',
+    totalProteinAchieved: 'البروتين المحقق',
+    totalDailyPlanCost: 'التكلفة اليومية للخطة',
+    totalMonthlyPlanCost: 'التكلفة الشهرية للخطة',
+    combinedCostPerGram: 'متوسط سعر 1غ بروتين',
+    targetMet: 'تم تحقيق الهدف بنجاح! 🎯',
+    proteinRemaining: 'متبقي للهدف:',
+    proteinSurplus: 'فائض فوق الهدف:',
+    emptyBasketTitle: 'لم تقم بإضافة أي أطعمة للخطة اليومية بعد',
+    emptyBasketDesc: 'اختر مصادر البروتين من القائمة أدناه وحدد كمياتها اليومية لمتابعة تحقيق هدفك وميزانيتك بدقة',
+    clearBasket: 'إفراغ الخطة',
+    singleSourceReferenceTitle: 'مرجع المصادر الفردية (للمقارنة النظرية)',
+    singleSourceReferenceDesc: 'تكلفة الوصول للهدف كاملاً من مصدر واحد فقط كمعيار مقارنة',
+    portionAmount: 'الكمية:',
 
     // Tables
     animalCategoryTitle: 'مصادر البروتين الحيواني',
@@ -128,13 +147,32 @@ export const translations = {
 
     // Simulator
     simulatorTitle: 'Daily Protein Target Simulator',
-    simulatorDesc: 'Adjust the slider to set your daily protein goal and compare its monthly cost across different sources',
+    simulatorDesc: 'Adjust the slider to set your daily protein goal and build your custom multi-source plan with exact costs',
     targetDailyProtein: 'Daily Protein Target',
     cheapestAnimal: 'Cheapest Animal Source',
     chickenBenchmark: 'Chicken Breast Benchmark',
     cheapestPlant: 'Cheapest Plant Source',
     estimatedDailyCost: 'Daily Cost',
     estimatedMonthlyCost: 'Monthly Cost (30 days)',
+
+    // Basket / Combo Builder
+    comboBuilderTitle: 'Daily Multi-Source Protein Plan Builder',
+    comboBuilderDesc: 'Select and combine the foods you actually consume daily to hit your target and track your total budget',
+    addItemToBasket: '+ Add Food to Plan',
+    selectFoodPlaceholder: 'Select a food to add to your plan...',
+    totalProteinAchieved: 'Protein Achieved',
+    totalDailyPlanCost: 'Daily Plan Cost',
+    totalMonthlyPlanCost: 'Monthly Plan Cost',
+    combinedCostPerGram: 'Avg Cost / g Protein',
+    targetMet: 'Target Reached! 🎯',
+    proteinRemaining: 'Remaining to target:',
+    proteinSurplus: 'Surplus above target:',
+    emptyBasketTitle: 'Your daily plan is currently empty',
+    emptyBasketDesc: 'Select protein sources from the list below and adjust daily portions to monitor your target and budget accurately',
+    clearBasket: 'Clear Plan',
+    singleSourceReferenceTitle: 'Single-Source Reference Benchmarks',
+    singleSourceReferenceDesc: 'Theoretical cost of hitting 100% of your target from a single food item alone',
+    portionAmount: 'Portion:',
 
     // Tables
     animalCategoryTitle: 'Animal Protein Sources',
