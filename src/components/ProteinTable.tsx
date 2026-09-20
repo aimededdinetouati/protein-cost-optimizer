@@ -30,8 +30,8 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
 }) => {
   const t = translations[lang];
 
-  const getUnitLabel = (unit: string) => {
-    switch (unit) {
+  const getUnitLabel = (item: CalculatedFoodItem) => {
+    switch (item.unit) {
       case 'kg':
         return t.unit_kg;
       case 'liter':
@@ -39,9 +39,12 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
       case '100g':
         return t.unit_100g;
       case 'piece':
+        if (item.pieceWeightGrams && item.pieceWeightGrams > 0) {
+          return lang === 'ar' ? `علبة (${item.pieceWeightGrams}غ)` : `container (${item.pieceWeightGrams}g)`;
+        }
         return t.unit_piece;
       default:
-        return unit;
+        return item.unit;
     }
   };
 
@@ -183,7 +186,7 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
                         </span>
                       </div>
                       <div className="text-[11px] text-slate-400 mt-1">
-                        / {getUnitLabel(item.unit)}
+                        / {getUnitLabel(item)}
                       </div>
                     </td>
 
@@ -223,7 +226,7 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
                       </div>
                       <div className="text-[11px] text-slate-400">
                         {lang === 'ar' ? 'صافي لكل ' : 'net / '}
-                        {getUnitLabel(item.unit)}
+                        {getUnitLabel(item)}
                       </div>
                     </td>
 
@@ -254,6 +257,8 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
                           ? `${item.dailyQuantityNeeded.toFixed(2)} ${t.unit_liter}`
                           : item.unit === '100g'
                           ? `${item.dailyQuantityNeeded.toFixed(1)} ${t.unit_100g}`
+                          : item.pieceWeightGrams
+                          ? `${item.dailyQuantityNeeded.toFixed(1)} ${lang === 'ar' ? 'علبة' : 'pots'}`
                           : `${item.dailyQuantityNeeded.toFixed(1)} ${t.unit_piece}`}
                       </div>
                       <div className="text-[11px] font-semibold text-emerald-700 mt-0.5">

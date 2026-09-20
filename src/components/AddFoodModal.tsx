@@ -26,6 +26,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
   const [nameAr, setNameAr] = useState('');
   const [nameEn, setNameEn] = useState('');
   const [unit, setUnit] = useState<UnitType>('kg');
+  const [pieceWeight, setPieceWeight] = useState<string>('');
   const [price, setPrice] = useState<number>(500);
   const [rawProtein, setRawProtein] = useState<number>(20);
   const [yieldPercent, setYieldPercent] = useState<number>(100);
@@ -36,9 +37,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
 
   // Calculate live preview
   const yieldRatio = Math.max(0.01, yieldPercent / 100);
+  const parsedPieceWeight = parseFloat(pieceWeight);
   let netProtein = 0;
   if (unit === 'kg' || unit === 'liter') {
     netProtein = rawProtein * 10 * yieldRatio;
+  } else if (unit === 'piece' && !isNaN(parsedPieceWeight) && parsedPieceWeight > 0) {
+    netProtein = rawProtein * (parsedPieceWeight / 100) * yieldRatio;
   } else {
     netProtein = rawProtein * yieldRatio;
   }
@@ -55,6 +59,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
       unit,
       price: Math.max(1, price),
       rawProteinPer100gOrUnit: Math.max(0.1, rawProtein),
+      pieceWeightGrams:
+        unit === 'piece' && !isNaN(parsedPieceWeight) && parsedPieceWeight > 0
+          ? parsedPieceWeight
+          : undefined,
       yieldPercent: Math.min(100, Math.max(5, yieldPercent)),
       wasteDescriptionAr: wasteDescAr.trim() || undefined,
       wasteDescriptionEn: wasteDescEn.trim() || undefined,
@@ -65,6 +73,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
     // Reset form
     setNameAr('');
     setNameEn('');
+    setPieceWeight('');
     setPrice(500);
     setRawProtein(20);
     setYieldPercent(100);
@@ -199,10 +208,38 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
             </div>
           </div>
 
+          {/* Piece / Container Weight in Grams (Only when unit === 'piece') */}
+          {unit === 'piece' && (
+            <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80">
+              <label className="block text-xs font-bold text-amber-900 mb-1">
+                {t.fieldPieceWeight}
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={pieceWeight}
+                  onChange={(e) => setPieceWeight(e.target.value)}
+                  placeholder={lang === 'ar' ? 'مثلاً: 90 لعلبة جبن صومام، 140 لعلبة تونة...' : 'e.g. 90 for Soummam cheese, 140 for tuna...'}
+                  className="w-full px-3.5 py-2 rounded-xl border border-amber-200 bg-white text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-500"
+                />
+                <span className="absolute end-3 top-2 text-xs font-bold text-slate-400 select-none">
+                  {t.gram}
+                </span>
+              </div>
+              <p className="text-[11px] text-amber-800/80 mt-1.5 leading-relaxed">
+                {t.fieldPieceWeightHelp}
+              </p>
+            </div>
+          )}
+
           {/* Raw Protein */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              {t.fieldProtein} (غرام)
+              {unit === 'piece' && !isNaN(parsedPieceWeight) && parsedPieceWeight > 0
+                ? (lang === 'ar' ? `كمية البروتين لكل 100غ من المنتج (غرام)` : `Raw Protein per 100g of product (grams)`)
+                : `${t.fieldProtein} (غرام)`}
             </label>
             <input
               type="number"
@@ -214,8 +251,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
             />
             <p className="text-[11px] text-slate-400 mt-1">
-              {unit === 'piece' 
-                ? (lang === 'ar' ? 'كمية البروتين في الحبة الواحدة' : 'Protein in one single piece') 
+              {unit === 'piece'
+                ? !isNaN(parsedPieceWeight) && parsedPieceWeight > 0
+                  ? (lang === 'ar'
+                      ? `💡 العلبة (${parsedPieceWeight}غ) تحتوي على ${(rawProtein * (parsedPieceWeight / 100)).toFixed(2)}غ بروتين صافي`
+                      : `💡 Container (${parsedPieceWeight}g) provides ${(rawProtein * (parsedPieceWeight / 100)).toFixed(2)}g net protein`)
+                  : (lang === 'ar' ? 'كمية البروتين في الحبة / العلبة الواحدة مباشرة' : 'Protein in one single piece / unit directly')
                 : unit === 'liter'
                 ? (lang === 'ar' ? 'كمية البروتين لكل 100 مل' : 'Protein per 100 ml')
                 : (lang === 'ar' ? 'كمية البروتين لكل 100 غرام خام' : 'Protein per 100 grams raw')}

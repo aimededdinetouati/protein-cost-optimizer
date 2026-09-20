@@ -9,7 +9,8 @@ export interface FoodItem {
   nameAr: string;
   price: number; // in DZD
   unit: UnitType;
-  rawProteinPer100gOrUnit: number; // grams of protein per 100g/100ml (or per piece if unit is 'piece')
+  rawProteinPer100gOrUnit: number; // grams of protein per 100g/100ml (or per piece if pieceWeightGrams not set)
+  pieceWeightGrams?: number; // custom net weight in grams for a piece/container (e.g. 90g for Soummam cheese, 140g for tuna)
   yieldPercent: number; // 0 to 100 (e.g. 53% for sardines, 68% for chicken thighs, 100% for boneless breasts/eggs)
   wasteDescriptionEn?: string;
   wasteDescriptionAr?: string;

@@ -221,6 +221,9 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
       case '100g':
         return t.unit_100g;
       case 'piece':
+        if (food.pieceWeightGrams && food.pieceWeightGrams > 0) {
+          return lang === 'ar' ? `علبة (${food.pieceWeightGrams}غ)` : `container (${food.pieceWeightGrams}g)`;
+        }
         return t.unit_piece;
       default:
         return food.unit;
@@ -549,7 +552,9 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
                           ? `${Math.round(quantity * 1000)} ${t.gram}`
                           : food.unit === 'liter'
                           ? `${Math.round(quantity * 1000)} ml`
-                          : unitLabel}
+                          : food.pieceWeightGrams
+                          ? `${quantity} ${lang === 'ar' ? 'علبة' : 'pots'}`
+                          : `${quantity} ${unitLabel}`}
                       </span>
                     </div>
 

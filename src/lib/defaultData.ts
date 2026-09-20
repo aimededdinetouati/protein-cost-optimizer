@@ -106,6 +106,20 @@ export const defaultFoods: FoodItem[] = [
     wasteDescriptionEn: 'No waste (3g protein / 100ml)',
     isCustom: false,
   },
+  {
+    id: 'soummam-cheese',
+    category: 'animal',
+    nameAr: 'جبن طبيعي صومام (علبة 90غ)',
+    nameEn: 'Soummam Natural Cheese (90g pot)',
+    price: 45,
+    unit: 'piece',
+    pieceWeightGrams: 90,
+    rawProteinPer100gOrUnit: 7.5,
+    yieldPercent: 100,
+    wasteDescriptionAr: 'علبة 90غ (7.5غ بروتين لكل 100غ)',
+    wasteDescriptionEn: '90g container (7.5g protein per 100g)',
+    isCustom: false,
+  },
 
   // Plant Sources
   {
@@ -159,8 +173,13 @@ export function calculateFoodMetrics(item: FoodItem, targetDailyProtein: number)
   } else if (item.unit === '100g') {
     netProteinPerUnit = item.rawProteinPer100gOrUnit * yieldRatio;
   } else {
-    // piece
-    netProteinPerUnit = item.rawProteinPer100gOrUnit * yieldRatio;
+    // piece / container
+    if (item.pieceWeightGrams && item.pieceWeightGrams > 0) {
+      // rawProteinPer100gOrUnit is per 100g, scaled to container weight
+      netProteinPerUnit = item.rawProteinPer100gOrUnit * (item.pieceWeightGrams / 100) * yieldRatio;
+    } else {
+      netProteinPerUnit = item.rawProteinPer100gOrUnit * yieldRatio;
+    }
   }
 
   const costPerGramProtein = netProteinPerUnit > 0 ? item.price / netProteinPerUnit : 0;
