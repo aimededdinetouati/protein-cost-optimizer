@@ -10,6 +10,7 @@ import { ProteinTable } from '@/components/ProteinTable';
 import { EmailAuthModal } from '@/components/EmailAuthModal';
 import { AddFoodModal } from '@/components/AddFoodModal';
 import { ResetDefaultsModal } from '@/components/ResetDefaultsModal';
+import { LayoutList, Calculator, Target, ChevronLeft, ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   const [lang, setLang] = useState<Language>('ar');
@@ -17,6 +18,9 @@ export default function Home() {
   const [foods, setFoods] = useState<FoodItem[]>(defaultFoods);
   const [targetDailyProtein, setTargetDailyProtein] = useState<number>(140);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  // Navigation tab state: 'tables' (default main view) | 'simulator'
+  const [activeTab, setActiveTab] = useState<'tables' | 'simulator'>('tables');
 
   // Modal states
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
@@ -222,47 +226,122 @@ export default function Home() {
       />
 
       {/* Main Content Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         
-        {/* Interactive Target Budget Simulator */}
-        <TargetCalculator
-          targetProtein={targetDailyProtein}
-          onTargetChange={setTargetDailyProtein}
-          animalItems={animalCalculated}
-          plantItems={plantCalculated}
-          lang={lang}
-        />
+        {/* Navigation Tabs (Tables View vs Simulator View) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+          
+          {/* Segmented Control */}
+          <div className="inline-flex p-1.5 rounded-2xl bg-slate-200/80 border border-slate-300/60 shadow-2xs">
+            <button
+              onClick={() => setActiveTab('tables')}
+              className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-150 cursor-pointer ${
+                activeTab === 'tables'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <LayoutList className="w-4 h-4 text-emerald-600" />
+              <span>{t.tabTables}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                activeTab === 'tables' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-300/70 text-slate-600'
+              }`}>
+                {foods.length}
+              </span>
+            </button>
 
-        {/* Table 1: Animal Protein Sources */}
-        <ProteinTable
-          category="animal"
-          title={t.animalCategoryTitle}
-          description={t.animalCategoryDesc}
-          items={animalCalculated}
-          lang={lang}
-          onUpdatePrice={handleUpdatePrice}
-          onUpdateYield={handleUpdateYield}
-          onDeleteFood={handleDeleteFood}
-          onOpenAddModal={handleOpenAddModal}
-        />
+            <button
+              onClick={() => setActiveTab('simulator')}
+              className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-150 cursor-pointer ${
+                activeTab === 'simulator'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Calculator className="w-4 h-4 text-emerald-600" />
+              <span>{t.tabSimulator}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                activeTab === 'simulator' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-300/70 text-slate-600'
+              }`}>
+                {targetDailyProtein}g
+              </span>
+            </button>
+          </div>
 
-        {/* Table 2: Plant Protein Sources */}
-        <ProteinTable
-          category="plant"
-          title={t.plantCategoryTitle}
-          description={t.plantCategoryDesc}
-          items={plantCalculated}
-          lang={lang}
-          onUpdatePrice={handleUpdatePrice}
-          onUpdateYield={handleUpdateYield}
-          onDeleteFood={handleDeleteFood}
-          onOpenAddModal={handleOpenAddModal}
-        />
+          {/* Quick Context Action based on active tab */}
+          {activeTab === 'tables' ? (
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 shadow-2xs text-xs text-slate-600">
+              <Target className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span className="text-slate-500 font-medium">{t.activeTargetQuickNote}</span>
+              <span className="font-extrabold text-slate-900">{targetDailyProtein} {t.gram}/{t.day}</span>
+              <button
+                onClick={() => setActiveTab('simulator')}
+                className="text-emerald-700 hover:text-emerald-800 font-bold ms-2 hover:underline inline-flex items-center gap-0.5 cursor-pointer"
+              >
+                <span>{t.openSimulatorBtn}</span>
+                {lang === 'ar' ? <ChevronLeft className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setActiveTab('tables')}
+              className="inline-flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-white border border-slate-200/80 px-3.5 py-2 rounded-xl shadow-2xs transition hover:bg-slate-50 cursor-pointer"
+            >
+              {lang === 'ar' ? <ArrowRight className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowLeft className="w-3.5 h-3.5 text-emerald-600" />}
+              <span>{t.openTablesBtn}</span>
+            </button>
+          )}
+
+        </div>
+
+        {/* TAB 1: Main Tables View */}
+        {activeTab === 'tables' && (
+          <div className="space-y-6 animate-in fade-in duration-150">
+            {/* Table 1: Animal Protein Sources */}
+            <ProteinTable
+              category="animal"
+              title={t.animalCategoryTitle}
+              description={t.animalCategoryDesc}
+              items={animalCalculated}
+              lang={lang}
+              onUpdatePrice={handleUpdatePrice}
+              onUpdateYield={handleUpdateYield}
+              onDeleteFood={handleDeleteFood}
+              onOpenAddModal={handleOpenAddModal}
+            />
+
+            {/* Table 2: Plant Protein Sources */}
+            <ProteinTable
+              category="plant"
+              title={t.plantCategoryTitle}
+              description={t.plantCategoryDesc}
+              items={plantCalculated}
+              lang={lang}
+              onUpdatePrice={handleUpdatePrice}
+              onUpdateYield={handleUpdateYield}
+              onDeleteFood={handleDeleteFood}
+              onOpenAddModal={handleOpenAddModal}
+            />
+          </div>
+        )}
+
+        {/* TAB 2: Dedicated Simulator View */}
+        {activeTab === 'simulator' && (
+          <div className="animate-in fade-in duration-150">
+            <TargetCalculator
+              targetProtein={targetDailyProtein}
+              onTargetChange={setTargetDailyProtein}
+              animalItems={animalCalculated}
+              plantItems={plantCalculated}
+              lang={lang}
+            />
+          </div>
+        )}
 
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200/80 bg-white py-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-slate-200/80 bg-white py-6 text-center text-xs text-slate-500 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>
             {t.appTitle} • {lang === 'ar' ? 'بيانات السوق الجزائري المعتمدة' : 'Verified Algerian Market Benchmarks'}

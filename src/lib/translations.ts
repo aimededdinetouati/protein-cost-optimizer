@@ -21,6 +21,15 @@ export const translations = {
     saved: 'تم الحفظ تلقائياً',
     saveError: 'فشل الحفظ',
 
+    // Tabs
+    tabTables: 'جداول مقارنة الأسعار',
+    tabTablesBadge: 'الرئيسية',
+    tabSimulator: 'محاكي الميزانية والماكرو',
+    tabSimulatorBadge: 'محاكي',
+    activeTargetQuickNote: 'الهدف النشط حالياً:',
+    openSimulatorBtn: 'فتح المحاكي',
+    openTablesBtn: 'العودة للجداول',
+
     // Simulator
     simulatorTitle: 'محاكي ميزانية البروتين اليومي',
     simulatorDesc: 'حرّك المؤشر لتحديد احتياجك اليومي من البروتين ومقارنة تكلفته الشهرية عبر مختلف المصادر',
@@ -107,6 +116,15 @@ export const translations = {
     saving: 'Saving...',
     saved: 'Auto-saved',
     saveError: 'Save failed',
+
+    // Tabs
+    tabTables: 'Price Comparison Tables',
+    tabTablesBadge: 'Main',
+    tabSimulator: 'Macro & Budget Simulator',
+    tabSimulatorBadge: 'Simulator',
+    activeTargetQuickNote: 'Active Target:',
+    openSimulatorBtn: 'Open Simulator',
+    openTablesBtn: 'Back to Tables',
 
     // Simulator
     simulatorTitle: 'Daily Protein Target Simulator',
