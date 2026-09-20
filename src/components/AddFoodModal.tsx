@@ -29,6 +29,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
   const [pieceWeight, setPieceWeight] = useState<string>('');
   const [price, setPrice] = useState<number>(500);
   const [rawProtein, setRawProtein] = useState<number>(20);
+  const [calories, setCalories] = useState<string>('');
   const [yieldPercent, setYieldPercent] = useState<number>(100);
   const [wasteDescAr, setWasteDescAr] = useState('');
   const [wasteDescEn, setWasteDescEn] = useState('');
@@ -52,6 +53,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
     e.preventDefault();
     if (!nameAr.trim() && !nameEn.trim()) return;
 
+    const parsedCals = parseFloat(calories);
+
     onAddFood({
       category,
       nameAr: nameAr.trim() || nameEn.trim(),
@@ -63,6 +66,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
         unit === 'piece' && !isNaN(parsedPieceWeight) && parsedPieceWeight > 0
           ? parsedPieceWeight
           : undefined,
+      caloriesPer100gOrUnit: !isNaN(parsedCals) && parsedCals > 0 ? parsedCals : undefined,
       yieldPercent: Math.min(100, Math.max(5, yieldPercent)),
       wasteDescriptionAr: wasteDescAr.trim() || undefined,
       wasteDescriptionEn: wasteDescEn.trim() || undefined,
@@ -76,6 +80,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
     setPieceWeight('');
     setPrice(500);
     setRawProtein(20);
+    setCalories('');
     setYieldPercent(100);
     setWasteDescAr('');
     setWasteDescEn('');
@@ -260,6 +265,28 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
                 : unit === 'liter'
                 ? (lang === 'ar' ? 'كمية البروتين لكل 100 مل' : 'Protein per 100 ml')
                 : (lang === 'ar' ? 'كمية البروتين لكل 100 غرام خام' : 'Protein per 100 grams raw')}
+            </p>
+          </div>
+
+          {/* Calories (Optional) */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              {t.fieldCalories}
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
+                placeholder={lang === 'ar' ? 'مثلاً: 120 لصدر الدجاج، 72 للبيضة...' : 'e.g. 120 for chicken, 72 for egg...'}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+              />
+              <span className="absolute end-3 top-2.5 text-xs font-semibold text-slate-400 select-none">kcal</span>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1">
+              {t.fieldCaloriesHelp}
             </p>
           </div>
 

@@ -152,10 +152,18 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
                           )}
                         </div>
 
-                        {/* Secondary language name */}
-                        <span className="text-xs text-slate-400 font-medium">
-                          {lang === 'ar' ? item.nameEn : item.nameAr}
-                        </span>
+                        {/* Secondary language name & Calories */}
+                        <div className="flex items-center gap-2 flex-wrap text-xs text-slate-400 font-medium mt-0.5">
+                          <span>{lang === 'ar' ? item.nameEn : item.nameAr}</span>
+                          {item.netCaloriesPerUnit > 0 && (
+                            <>
+                              <span>•</span>
+                              <span className="text-amber-700 font-semibold inline-flex items-center gap-0.5">
+                                🔥 {Math.round(item.netCaloriesPerUnit)} {t.kcal} / {getUnitLabel(item)}
+                              </span>
+                            </>
+                          )}
+                        </div>
 
                         {/* Waste description if any */}
                         {wasteDesc && item.yieldPercent < 100 && (

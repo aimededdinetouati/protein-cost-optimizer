@@ -114,11 +114,14 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
           costDzd = bItem.quantity * food.price;
         }
 
+        const calories = bItem.quantity * (food.netCaloriesPerUnit || 0);
+
         return {
           ...bItem,
           food,
           proteinGrams,
           costDzd,
+          calories,
         };
       })
       .filter(Boolean) as Array<{
@@ -127,12 +130,17 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
       food: CalculatedFoodItem;
       proteinGrams: number;
       costDzd: number;
+      calories: number;
     }>;
   }, [basket, foodMap]);
 
   // Totals
   const totalProtein = useMemo(() => {
     return detailedBasket.reduce((sum, item) => sum + item.proteinGrams, 0);
+  }, [detailedBasket]);
+
+  const totalCalories = useMemo(() => {
+    return detailedBasket.reduce((sum, item) => sum + item.calories, 0);
   }, [detailedBasket]);
 
   const totalDailyCost = useMemo(() => {
@@ -405,9 +413,24 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
             </div>
           </div>
 
-          {/* 3 Metric Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* 4 Metric Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             
+            {/* Total Calories */}
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+              <span className="block text-xs font-medium text-slate-500 mb-1">
+                {t.totalCalories}
+              </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl font-black text-amber-600">
+                  {Math.round(totalCalories).toLocaleString()}
+                </span>
+                <span className="text-xs font-bold text-slate-500">
+                  {t.kcal}
+                </span>
+              </div>
+            </div>
+
             {/* Daily Total Cost */}
             <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
               <span className="block text-xs font-medium text-slate-500 mb-1">
@@ -481,7 +504,7 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
             </div>
           ) : (
             <div className="space-y-3">
-              {detailedBasket.map(({ foodId, quantity, food, proteinGrams, costDzd }) => {
+              {detailedBasket.map(({ foodId, quantity, food, proteinGrams, costDzd, calories }) => {
                 const isAnimal = food.category === 'animal';
                 const unitLabel = getUnitDisplay(food);
 
@@ -558,15 +581,22 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
                       </span>
                     </div>
 
-                    {/* Right: Calculated Protein & Cost for this item */}
+                    {/* Right: Calculated Protein, Calories & Cost for this item */}
                     <div className="flex items-center justify-between md:justify-end gap-5">
                       <div className="text-end">
                         <span className="block text-sm font-extrabold text-emerald-800">
                           +{proteinGrams.toFixed(1)} {t.gram}
                         </span>
-                        <span className="text-xs font-bold text-slate-500">
-                          {Math.round(costDzd).toLocaleString()} {t.currency}
-                        </span>
+                        <div className="flex items-center gap-1.5 justify-end text-xs text-slate-500">
+                          {calories > 0 && (
+                            <span className="font-semibold text-amber-700">
+                              {Math.round(calories)} {t.kcal} •
+                            </span>
+                          )}
+                          <span className="font-bold">
+                            {Math.round(costDzd).toLocaleString()} {t.currency}
+                          </span>
+                        </div>
                       </div>
 
                       <button

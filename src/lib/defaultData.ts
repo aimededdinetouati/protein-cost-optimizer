@@ -10,6 +10,7 @@ export const defaultFoods: FoodItem[] = [
     price: 20,
     unit: 'piece',
     rawProteinPer100gOrUnit: 6.0,
+    caloriesPer100gOrUnit: 72,
     yieldPercent: 100,
     wasteDescriptionAr: 'بدون فضلات',
     wasteDescriptionEn: 'No waste',
@@ -23,6 +24,7 @@ export const defaultFoods: FoodItem[] = [
     price: 1050,
     unit: 'kg',
     rawProteinPer100gOrUnit: 23.0,
+    caloriesPer100gOrUnit: 120,
     yieldPercent: 100,
     wasteDescriptionAr: 'صدر منزوع الجلد والعظم',
     wasteDescriptionEn: 'Boneless, skinless breast',
@@ -36,6 +38,7 @@ export const defaultFoods: FoodItem[] = [
     price: 1050,
     unit: 'kg',
     rawProteinPer100gOrUnit: 24.0,
+    caloriesPer100gOrUnit: 115,
     yieldPercent: 100,
     wasteDescriptionAr: 'إسكالوب هبرة صافي',
     wasteDescriptionEn: 'Lean escalope fillet',
@@ -49,6 +52,7 @@ export const defaultFoods: FoodItem[] = [
     price: 600,
     unit: 'kg',
     rawProteinPer100gOrUnit: 19.5,
+    caloriesPer100gOrUnit: 175,
     yieldPercent: 68,
     wasteDescriptionAr: '32% فضلات (عظام وجلد)',
     wasteDescriptionEn: '32% waste (bones and skin)',
@@ -62,6 +66,7 @@ export const defaultFoods: FoodItem[] = [
     price: 20,
     unit: 'piece',
     rawProteinPer100gOrUnit: 3.6,
+    caloriesPer100gOrUnit: 17,
     yieldPercent: 100,
     wasteDescriptionAr: 'بياض بيضة واحدة فقط',
     wasteDescriptionEn: 'White of 1 egg only',
@@ -75,6 +80,7 @@ export const defaultFoods: FoodItem[] = [
     price: 800,
     unit: 'kg',
     rawProteinPer100gOrUnit: 21.0,
+    caloriesPer100gOrUnit: 135,
     yieldPercent: 53,
     wasteDescriptionAr: '47% فضلات (الرأس، الأحشاء، السلسول)',
     wasteDescriptionEn: '47% waste (head, viscera, spine)',
@@ -88,6 +94,7 @@ export const defaultFoods: FoodItem[] = [
     price: 60,
     unit: '100g',
     rawProteinPer100gOrUnit: 8.0,
+    caloriesPer100gOrUnit: 42,
     yieldPercent: 100,
     wasteDescriptionAr: 'بدون فضلات',
     wasteDescriptionEn: 'No waste',
@@ -101,6 +108,7 @@ export const defaultFoods: FoodItem[] = [
     price: 140,
     unit: 'liter',
     rawProteinPer100gOrUnit: 3.0,
+    caloriesPer100gOrUnit: 45,
     yieldPercent: 100,
     wasteDescriptionAr: 'بدون فضلات (3غ بروتين / 100مل)',
     wasteDescriptionEn: 'No waste (3g protein / 100ml)',
@@ -115,6 +123,7 @@ export const defaultFoods: FoodItem[] = [
     unit: 'piece',
     pieceWeightGrams: 90,
     rawProteinPer100gOrUnit: 7.5,
+    caloriesPer100gOrUnit: 85,
     yieldPercent: 100,
     wasteDescriptionAr: 'علبة 90غ (7.5غ بروتين لكل 100غ)',
     wasteDescriptionEn: '90g container (7.5g protein per 100g)',
@@ -130,6 +139,7 @@ export const defaultFoods: FoodItem[] = [
     price: 300,
     unit: 'kg',
     rawProteinPer100gOrUnit: 24.0,
+    caloriesPer100gOrUnit: 340,
     yieldPercent: 100,
     wasteDescriptionAr: 'حبوب جافة 100% صالحة للاستهلاك',
     wasteDescriptionEn: '100% edible dry legumes',
@@ -143,6 +153,7 @@ export const defaultFoods: FoodItem[] = [
     price: 340,
     unit: 'kg',
     rawProteinPer100gOrUnit: 21.0,
+    caloriesPer100gOrUnit: 330,
     yieldPercent: 100,
     wasteDescriptionAr: 'حبوب جافة 100% صالحة للاستهلاك',
     wasteDescriptionEn: '100% edible dry legumes',
@@ -156,6 +167,7 @@ export const defaultFoods: FoodItem[] = [
     price: 420,
     unit: 'kg',
     rawProteinPer100gOrUnit: 19.0,
+    caloriesPer100gOrUnit: 360,
     yieldPercent: 100,
     wasteDescriptionAr: 'حبوب جافة 100% صالحة للاستهلاك',
     wasteDescriptionEn: '100% edible dry legumes',
@@ -166,19 +178,25 @@ export const defaultFoods: FoodItem[] = [
 export function calculateFoodMetrics(item: FoodItem, targetDailyProtein: number): CalculatedFoodItem {
   const yieldRatio = Math.max(0.01, (item.yieldPercent || 100) / 100);
   let netProteinPerUnit = 0;
+  let netCaloriesPerUnit = 0;
+  const rawCals = item.caloriesPer100gOrUnit || 0;
 
   if (item.unit === 'kg' || item.unit === 'liter') {
     // rawProteinPer100gOrUnit * 10 = raw protein in 1000g / 1000ml (1L) * yieldRatio
     netProteinPerUnit = item.rawProteinPer100gOrUnit * 10 * yieldRatio;
+    netCaloriesPerUnit = rawCals * 10 * yieldRatio;
   } else if (item.unit === '100g') {
     netProteinPerUnit = item.rawProteinPer100gOrUnit * yieldRatio;
+    netCaloriesPerUnit = rawCals * yieldRatio;
   } else {
     // piece / container
     if (item.pieceWeightGrams && item.pieceWeightGrams > 0) {
       // rawProteinPer100gOrUnit is per 100g, scaled to container weight
       netProteinPerUnit = item.rawProteinPer100gOrUnit * (item.pieceWeightGrams / 100) * yieldRatio;
+      netCaloriesPerUnit = rawCals * (item.pieceWeightGrams / 100) * yieldRatio;
     } else {
       netProteinPerUnit = item.rawProteinPer100gOrUnit * yieldRatio;
+      netCaloriesPerUnit = rawCals * yieldRatio;
     }
   }
 
@@ -190,6 +208,7 @@ export function calculateFoodMetrics(item: FoodItem, targetDailyProtein: number)
   return {
     ...item,
     netProteinPerUnit,
+    netCaloriesPerUnit,
     costPerGramProtein,
     dailyQuantityNeeded,
     dailyCost,
@@ -221,12 +240,21 @@ export function mergeWithDefaults(savedFoods: FoodItem[]): FoodItem[] {
   if (!Array.isArray(savedFoods) || savedFoods.length === 0) {
     return defaultFoods;
   }
+  const defaultMap = new Map(defaultFoods.map((df) => [df.id, df]));
+
   const updatedFoods = savedFoods.map((f) => {
+    const defaultItem = defaultMap.get(f.id);
+    let item = f;
     if (f.id === 'soummam-cheese' && f.price === 45) {
-      return { ...f, price: 50 };
+      item = { ...item, price: 50 };
     }
-    return f;
+    // Backfill calories if not set
+    if (defaultItem && item.caloriesPer100gOrUnit === undefined && defaultItem.caloriesPer100gOrUnit !== undefined) {
+      item = { ...item, caloriesPer100gOrUnit: defaultItem.caloriesPer100gOrUnit };
+    }
+    return item;
   });
+
   const existingIds = new Set(updatedFoods.map((f) => f.id));
   const missingDefaults = defaultFoods.filter((df) => !existingIds.has(df.id));
   return [...updatedFoods, ...missingDefaults];
