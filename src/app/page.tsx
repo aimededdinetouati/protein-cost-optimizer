@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { FoodItem, Category, Language } from '@/types';
-import { defaultFoods, rankAndCalculateFoods } from '@/lib/defaultData';
+import { defaultFoods, rankAndCalculateFoods, mergeWithDefaults } from '@/lib/defaultData';
 import { translations } from '@/lib/translations';
 import { Header } from '@/components/Header';
 import { TargetCalculator } from '@/components/TargetCalculator';
@@ -38,7 +38,7 @@ export default function Home() {
       if (res.ok) {
         const data = await res.json();
         if (data.foods && Array.isArray(data.foods)) {
-          setFoods(data.foods);
+          setFoods(mergeWithDefaults(data.foods));
         }
         if (data.targetDailyProtein) {
           setTargetDailyProtein(data.targetDailyProtein);
@@ -76,7 +76,9 @@ export default function Home() {
         if (guestData) {
           try {
             const parsed = JSON.parse(guestData);
-            if (parsed.foods) setFoods(parsed.foods);
+            if (parsed.foods && Array.isArray(parsed.foods)) {
+              setFoods(mergeWithDefaults(parsed.foods));
+            }
             if (parsed.targetDailyProtein) setTargetDailyProtein(parsed.targetDailyProtein);
           } catch {
             // ignore corrupted guest data

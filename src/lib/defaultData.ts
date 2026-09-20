@@ -197,3 +197,12 @@ export function rankAndCalculateFoods(foods: FoodItem[], targetDailyProtein: num
 
   return { animal: animalCalculated, plant: plantCalculated };
 }
+
+export function mergeWithDefaults(savedFoods: FoodItem[]): FoodItem[] {
+  if (!Array.isArray(savedFoods) || savedFoods.length === 0) {
+    return defaultFoods;
+  }
+  const existingIds = new Set(savedFoods.map((f) => f.id));
+  const missingDefaults = defaultFoods.filter((df) => !existingIds.has(df.id));
+  return [...savedFoods, ...missingDefaults];
+}

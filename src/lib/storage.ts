@@ -2,7 +2,7 @@ import { getStore } from '@netlify/blobs';
 import fs from 'fs';
 import path from 'path';
 import { UserProfile } from '@/types';
-import { defaultFoods } from './defaultData';
+import { defaultFoods, mergeWithDefaults } from './defaultData';
 
 const LOCAL_STORAGE_DIR = path.join(process.cwd(), '.local-blobs-data');
 
@@ -25,6 +25,12 @@ export async function getUserProfile(email: string): Promise<UserProfile> {
     const store = getStore({ name: 'protein_users', consistency: 'strong' });
     const data = (await store.get(normalizedEmail, { type: 'json' })) as UserProfile | null;
     if (data) {
+      const mergedFoods = mergeWithDefaults(data.foods);
+      if (mergedFoods.length !== data.foods.length) {
+        const updated: UserProfile = { ...data, foods: mergedFoods, updatedAt: new Date().toISOString() };
+        await store.setJSON(normalizedEmail, updated);
+        return updated;
+      }
       return data;
     }
 
@@ -44,7 +50,14 @@ export async function getUserProfile(email: string): Promise<UserProfile> {
       const filePath = getLocalFilePath(normalizedEmail);
       if (fs.existsSync(filePath)) {
         const fileContent = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(fileContent);
+        const parsed: UserProfile = JSON.parse(fileContent);
+        const mergedFoods = mergeWithDefaults(parsed.foods);
+        if (mergedFoods.length !== parsed.foods.length) {
+          const updated: UserProfile = { ...parsed, foods: mergedFoods, updatedAt: new Date().toISOString() };
+          fs.writeFileSync(filePath, JSON.stringify(updated, null, 2), 'utf-8');
+          return updated;
+        }
+        return parsed;
       }
       const initialProfile: UserProfile = {
         email: normalizedEmail,
