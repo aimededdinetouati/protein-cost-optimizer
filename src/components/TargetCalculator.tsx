@@ -39,10 +39,19 @@ export const TargetCalculator: React.FC<TargetCalculatorProps> = ({
   const formatQuantity = (item: CalculatedFoodItem) => {
     const qty = item.dailyQuantityNeeded;
     const unitLabel =
-      item.unit === 'kg' ? t.unit_kg : item.unit === '100g' ? t.unit_100g : t.unit_piece;
+      item.unit === 'kg'
+        ? t.unit_kg
+        : item.unit === 'liter'
+        ? t.unit_liter
+        : item.unit === '100g'
+        ? t.unit_100g
+        : t.unit_piece;
 
     if (item.unit === 'kg') {
       return `${qty.toFixed(2)} ${unitLabel} (~${Math.round(qty * 1000)} ${t.gram})`;
+    }
+    if (item.unit === 'liter') {
+      return `${qty.toFixed(2)} ${unitLabel} (~${Math.round(qty * 1000)} ml)`;
     }
     return `${qty.toFixed(1)} ${unitLabel}`;
   };

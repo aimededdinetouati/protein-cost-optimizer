@@ -93,6 +93,19 @@ export const defaultFoods: FoodItem[] = [
     wasteDescriptionEn: 'No waste',
     isCustom: false,
   },
+  {
+    id: 'candia-milk',
+    category: 'animal',
+    nameAr: 'حليب كانديا (1 لتر)',
+    nameEn: 'Candia Milk (1L)',
+    price: 140,
+    unit: 'liter',
+    rawProteinPer100gOrUnit: 3.0,
+    yieldPercent: 100,
+    wasteDescriptionAr: 'بدون فضلات (3غ بروتين / 100مل)',
+    wasteDescriptionEn: 'No waste (3g protein / 100ml)',
+    isCustom: false,
+  },
 
   // Plant Sources
   {
@@ -140,8 +153,8 @@ export function calculateFoodMetrics(item: FoodItem, targetDailyProtein: number)
   const yieldRatio = Math.max(0.01, (item.yieldPercent || 100) / 100);
   let netProteinPerUnit = 0;
 
-  if (item.unit === 'kg') {
-    // rawProteinPer100g * 10 = raw protein in 1000g (1kg) * yieldRatio
+  if (item.unit === 'kg' || item.unit === 'liter') {
+    // rawProteinPer100gOrUnit * 10 = raw protein in 1000g / 1000ml (1L) * yieldRatio
     netProteinPerUnit = item.rawProteinPer100gOrUnit * 10 * yieldRatio;
   } else if (item.unit === '100g') {
     netProteinPerUnit = item.rawProteinPer100gOrUnit * yieldRatio;

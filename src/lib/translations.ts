@@ -52,6 +52,7 @@ export const translations = {
     unit_kg: 'كلغ',
     unit_100g: '100غ',
     unit_piece: 'حبة',
+    unit_liter: 'لتر',
 
     // Email Modal
     authModalTitle: 'مرحباً بك في موازن تكلفة البروتين',
@@ -138,6 +139,7 @@ export const translations = {
     unit_kg: 'kg',
     unit_100g: '100g',
     unit_piece: 'piece',
+    unit_liter: 'Liter',
 
     // Email Modal
     authModalTitle: 'Welcome to Protein Cost Optimizer',

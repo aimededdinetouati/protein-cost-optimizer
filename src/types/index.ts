@@ -1,6 +1,6 @@
 export type Category = 'animal' | 'plant';
 
-export type UnitType = 'kg' | '100g' | 'piece';
+export type UnitType = 'kg' | '100g' | 'piece' | 'liter';
 
 export interface FoodItem {
   id: string;
@@ -9,7 +9,7 @@ export interface FoodItem {
   nameAr: string;
   price: number; // in DZD
   unit: UnitType;
-  rawProteinPer100gOrUnit: number; // grams of protein per 100g (or per piece if unit is 'piece')
+  rawProteinPer100gOrUnit: number; // grams of protein per 100g/100ml (or per piece if unit is 'piece')
   yieldPercent: number; // 0 to 100 (e.g. 53% for sardines, 68% for chicken thighs, 100% for boneless breasts/eggs)
   wasteDescriptionEn?: string;
   wasteDescriptionAr?: string;

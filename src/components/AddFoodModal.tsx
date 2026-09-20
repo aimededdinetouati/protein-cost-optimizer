@@ -37,7 +37,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
   // Calculate live preview
   const yieldRatio = Math.max(0.01, yieldPercent / 100);
   let netProtein = 0;
-  if (unit === 'kg') {
+  if (unit === 'kg' || unit === 'liter') {
     netProtein = rawProtein * 10 * yieldRatio;
   } else {
     netProtein = rawProtein * yieldRatio;
@@ -172,7 +172,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="kg">{t.unit_kg} (1 Kilogram)</option>
-                <option value="100g">{t.unit_100g} (100 Grams)</option>
+                <option value="liter">{t.unit_liter} (1 {lang === 'ar' ? 'لتر' : 'Liter'})</option>
+                <option value="100g">{t.unit_100g} (100 Grams / 100ml)</option>
                 <option value="piece">{t.unit_piece} (1 Piece / Egg)</option>
               </select>
             </div>
@@ -215,6 +216,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({
             <p className="text-[11px] text-slate-400 mt-1">
               {unit === 'piece' 
                 ? (lang === 'ar' ? 'كمية البروتين في الحبة الواحدة' : 'Protein in one single piece') 
+                : unit === 'liter'
+                ? (lang === 'ar' ? 'كمية البروتين لكل 100 مل' : 'Protein per 100 ml')
                 : (lang === 'ar' ? 'كمية البروتين لكل 100 غرام خام' : 'Protein per 100 grams raw')}
             </p>
           </div>

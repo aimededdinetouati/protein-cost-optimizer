@@ -34,6 +34,8 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
     switch (unit) {
       case 'kg':
         return t.unit_kg;
+      case 'liter':
+        return t.unit_liter;
       case '100g':
         return t.unit_100g;
       case 'piece':
@@ -248,6 +250,8 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
                       <div className="font-bold text-slate-800 text-xs sm:text-sm">
                         {item.unit === 'kg'
                           ? `${item.dailyQuantityNeeded.toFixed(2)} ${t.unit_kg}`
+                          : item.unit === 'liter'
+                          ? `${item.dailyQuantityNeeded.toFixed(2)} ${t.unit_liter}`
                           : item.unit === '100g'
                           ? `${item.dailyQuantityNeeded.toFixed(1)} ${t.unit_100g}`
                           : `${item.dailyQuantityNeeded.toFixed(1)} ${t.unit_piece}`}
