@@ -111,7 +111,7 @@ export const defaultFoods: FoodItem[] = [
     category: 'animal',
     nameAr: 'جبن طبيعي صومام (علبة 90غ)',
     nameEn: 'Soummam Natural Cheese (90g pot)',
-    price: 45,
+    price: 50,
     unit: 'piece',
     pieceWeightGrams: 90,
     rawProteinPer100gOrUnit: 7.5,
@@ -221,7 +221,13 @@ export function mergeWithDefaults(savedFoods: FoodItem[]): FoodItem[] {
   if (!Array.isArray(savedFoods) || savedFoods.length === 0) {
     return defaultFoods;
   }
-  const existingIds = new Set(savedFoods.map((f) => f.id));
+  const updatedFoods = savedFoods.map((f) => {
+    if (f.id === 'soummam-cheese' && f.price === 45) {
+      return { ...f, price: 50 };
+    }
+    return f;
+  });
+  const existingIds = new Set(updatedFoods.map((f) => f.id));
   const missingDefaults = defaultFoods.filter((df) => !existingIds.has(df.id));
-  return [...savedFoods, ...missingDefaults];
+  return [...updatedFoods, ...missingDefaults];
 }
