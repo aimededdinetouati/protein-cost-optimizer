@@ -39,14 +39,14 @@ export const defaultFoods: FoodItem[] = [
   {
     id: 'turkey-breast',
     category: 'animal',
-    nameAr: 'إسكالوب دند',
+    nameAr: 'صدر الديك الرومي',
     nameEn: 'Turkey Breast / Escalope',
     price: 1050,
     unit: 'kg',
     rawProteinPer100gOrUnit: 24.0,
     caloriesPer100gOrUnit: 115,
     yieldPercent: 100,
-    wasteDescriptionAr: 'إسكالوب هبرة صافي',
+    wasteDescriptionAr: 'صدر ديك رومي هبرة صافي',
     wasteDescriptionEn: 'Lean escalope fillet',
     isCustom: false,
   },
@@ -253,6 +253,13 @@ export function mergeWithDefaults(savedFoods: FoodItem[]): FoodItem[] {
     let item = f;
     if (f.id === 'soummam-cheese' && f.price === 45) {
       item = { ...item, price: 50 };
+    }
+    if (f.id === 'turkey-breast' && (f.nameAr.includes('إسكالوب') || f.nameAr.includes('دند') || f.nameAr.includes('داند'))) {
+      item = {
+        ...item,
+        nameAr: 'صدر الديك الرومي',
+        wasteDescriptionAr: f.wasteDescriptionAr === 'إسكالوب هبرة صافي' ? 'صدر ديك رومي هبرة صافي' : f.wasteDescriptionAr,
+      };
     }
     // Backfill calories if not set
     if (defaultItem && item.caloriesPer100gOrUnit === undefined && defaultItem.caloriesPer100gOrUnit !== undefined) {

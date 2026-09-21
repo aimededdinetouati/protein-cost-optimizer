@@ -9,6 +9,7 @@ import { TargetCalculator } from '@/components/TargetCalculator';
 import { ProteinTable } from '@/components/ProteinTable';
 import { EmailAuthModal } from '@/components/EmailAuthModal';
 import { AddFoodModal } from '@/components/AddFoodModal';
+import { EditFoodModal } from '@/components/EditFoodModal';
 import { ResetDefaultsModal } from '@/components/ResetDefaultsModal';
 import { LayoutList, Calculator, Target, ChevronLeft, ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -27,6 +28,7 @@ export default function Home() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [addModalCategory, setAddModalCategory] = useState<Category>('animal');
+  const [editingFood, setEditingFood] = useState<FoodItem | null>(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
 
   // Critical flag: prevent auto-saving until user profile is completely loaded
@@ -201,6 +203,12 @@ export default function Home() {
     setFoods((prev) => prev.filter((item) => item.id !== id));
   };
 
+  const handleUpdateFood = (updatedFood: FoodItem) => {
+    setFoods((prev) =>
+      prev.map((item) => (item.id === updatedFood.id ? updatedFood : item))
+    );
+  };
+
   const handleAddFood = (newFoodData: Omit<FoodItem, 'id'>) => {
     const newItem: FoodItem = {
       ...newFoodData,
@@ -329,6 +337,7 @@ export default function Home() {
               onUpdateYield={handleUpdateYield}
               onDeleteFood={handleDeleteFood}
               onOpenAddModal={handleOpenAddModal}
+              onEditFood={(food) => setEditingFood(food)}
             />
 
             {/* Table 2: Plant Protein Sources */}
@@ -342,6 +351,7 @@ export default function Home() {
               onUpdateYield={handleUpdateYield}
               onDeleteFood={handleDeleteFood}
               onOpenAddModal={handleOpenAddModal}
+              onEditFood={(food) => setEditingFood(food)}
             />
           </div>
         )}
@@ -392,6 +402,14 @@ export default function Home() {
         onClose={() => setIsAddModalOpen(false)}
         onAddFood={handleAddFood}
         defaultCategory={addModalCategory}
+        lang={lang}
+      />
+
+      <EditFoodModal
+        isOpen={editingFood !== null}
+        food={editingFood}
+        onClose={() => setEditingFood(null)}
+        onUpdateFood={handleUpdateFood}
         lang={lang}
       />
 

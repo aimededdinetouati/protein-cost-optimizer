@@ -3,7 +3,7 @@
 import React from 'react';
 import { CalculatedFoodItem, Category, Language } from '@/types';
 import { translations } from '@/lib/translations';
-import { Award, Plus, Trash2, Info } from 'lucide-react';
+import { Award, Plus, Trash2, Info, Pencil } from 'lucide-react';
 
 interface ProteinTableProps {
   category: Category;
@@ -15,6 +15,7 @@ interface ProteinTableProps {
   onUpdateYield: (id: string, yieldPercent: number) => void;
   onDeleteFood: (id: string) => void;
   onOpenAddModal: (category: Category) => void;
+  onEditFood: (food: CalculatedFoodItem) => void;
 }
 
 export const ProteinTable: React.FC<ProteinTableProps> = ({
@@ -27,6 +28,7 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
   onUpdateYield,
   onDeleteFood,
   onOpenAddModal,
+  onEditFood,
 }) => {
   const t = translations[lang];
 
@@ -95,7 +97,7 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
               <th className="py-3.5 px-4 text-center min-w-[130px]">{t.colNetProtein}</th>
               <th className="py-3.5 px-4 text-center min-w-[150px]">{t.colCostPerGram}</th>
               <th className="py-3.5 px-4 text-center min-w-[160px]">{t.colDailyQuantity}</th>
-              <th className="py-3.5 px-4 text-center w-16">{t.colActions}</th>
+              <th className="py-3.5 px-3 text-center w-20">{t.colActions}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -136,9 +138,14 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
                     <td className="py-4 px-4 align-middle">
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900 text-sm sm:text-base">
+                          <button
+                            type="button"
+                            onClick={() => onEditFood(item)}
+                            className="font-bold text-slate-900 text-sm sm:text-base hover:text-amber-700 transition text-start hover:underline decoration-slate-300 underline-offset-4 cursor-pointer"
+                            title={t.editFoodBtn}
+                          >
                             {lang === 'ar' ? item.nameAr : item.nameEn}
-                          </span>
+                          </button>
                           {isBest && (
                             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
                               <Award className="w-3 h-3" />
@@ -276,17 +283,26 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({
 
                     {/* Action Column */}
                     <td className="py-4 px-3 text-center align-middle">
-                      <button
-                        onClick={() => {
-                          if (confirm(t.deleteConfirm)) {
-                            onDeleteFood(item.id);
-                          }
-                        }}
-                        className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition"
-                        title={lang === 'ar' ? 'حذف' : 'Delete'}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => onEditFood(item)}
+                          className="text-slate-400 hover:text-amber-600 hover:bg-amber-50 p-1.5 rounded-lg transition cursor-pointer"
+                          title={t.editFoodBtn}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm(t.deleteConfirm)) {
+                              onDeleteFood(item.id);
+                            }
+                          }}
+                          className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition cursor-pointer"
+                          title={lang === 'ar' ? 'حذف' : 'Delete'}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

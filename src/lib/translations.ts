@@ -115,6 +115,12 @@ export const translations = {
     cancelBtn: 'إلغاء',
     submitAddBtn: 'إضافة المصدر',
 
+    // Edit Food Modal
+    editFoodBtn: 'تعديل',
+    editModalTitle: 'تعديل بيانات المصدر الغذائي',
+    submitEditBtn: 'حفظ التعديلات',
+    calculatedNotice: 'المؤشرات المحسوبة (صافي البروتين، السعرات الصافية، التكلفة للغرام) تُحسب تلقائياً وفق المعادلات ولا يمكن تعديلها يدوياً.',
+
     // Reset Modal
     resetModalTitle: 'استعادة الأسعار الافتراضية',
     resetModalDesc: 'سيتم استبدال جميع الأسعار والتعديلات الحالية بالأسعار والمصادر الافتراضية المعتمدة للسوق الجزائري. هل أنت متأكد؟',
@@ -235,6 +241,12 @@ export const translations = {
     fieldWasteDescEn: 'Waste notes in English (optional)',
     cancelBtn: 'Cancel',
     submitAddBtn: 'Add Food Item',
+
+    // Edit Food Modal
+    editFoodBtn: 'Edit',
+    editModalTitle: 'Edit Food Source Details',
+    submitEditBtn: 'Save Changes',
+    calculatedNotice: 'Calculated metrics (net protein, net calories, cost per gram) are computed automatically using formulas and cannot be manually modified.',
 
     // Reset Modal
     resetModalTitle: 'Reset to Default Values',
